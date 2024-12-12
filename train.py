@@ -2,7 +2,7 @@ import sqlite3
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from model import EncoderCNN
+from model import AutoEncoder
 from dataset import ImageDataset, transform
 from torch.utils.data import DataLoader, random_split
 import numpy as np
@@ -34,7 +34,7 @@ train_dataset, _ = random_split(dataset, [train_size, test_size])
 
 data_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
-model = EncoderCNN(embed_size=256, num_classes=90).to(device)
+model = AutoEncoder(embed_size=256, num_classes=90).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 

@@ -2,7 +2,7 @@ import sqlite3
 import numpy as np
 import torch
 import cv2
-from model import EncoderCNN
+from model import AutoEncoder
 from dataset import ImageDataset, transform, animal_array
 from torch.utils.data import DataLoader, random_split, Subset
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix
@@ -13,7 +13,7 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 def load_model(model_path, device):
-    model = EncoderCNN(embed_size=256, num_classes=90)
+    model = AutoEncoder(embed_size=256, num_classes=90)
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.to(device)
     model.eval()
