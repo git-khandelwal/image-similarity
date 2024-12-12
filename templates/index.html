@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Similarity Search</title>
+</head>
+<body>
+    <h1>Upload an image to look for similar images</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageFile" name="file" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Image Preview -->
+    <h2>Image Preview:</h2>
+    <img id="imagePreview" src="" alt="Your image will appear here" style="max-width: 500px; display: none;">
+
+    <!-- Caption Output -->
+    <h2>Similar Image Results:</h2>
+    <pre id="output"></pre>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('imageFile');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            // Display the image preview
+            const imagePreview = document.getElementById('imagePreview');
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = "";
+                imagePreview.style.display = 'none';
+            }
+
+            // Send the image to the backend for caption generation
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                // Display predicted class and similar images
+                document.getElementById('output').textContent = `Predicted Class: ${result.predicted_class}\nSimilar Images: \n${result.similar_images.join('\n')}`;
+            } else {
+                document.getElementById('output').textContent = result.error;
+            }
+            
+        });
+    </script>
+</body>
+</html>
