@@ -19,7 +19,7 @@ def load_model(model_path, device):
     model.eval()
     return model
 
-def get_top_similar(feature, conn, top_n=5, threshold=0.6):
+def get_top_similar(feature, conn, top_n=5, threshold=0.5):
     c = conn.cursor()
     c.execute('SELECT feature, image_path, prediction FROM image_features')
     rows = c.fetchall()
