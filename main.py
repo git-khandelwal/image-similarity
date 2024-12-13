@@ -6,7 +6,7 @@ import torch
 from dataset import transform
 from flask import render_template
 import sqlite3
-from similarity import load_model, get_top_similar
+from similarity import load_model, get_top_similar, get_top_similar_faiss
 from dataset import animal_array
 import numpy as np
 
@@ -47,6 +47,8 @@ def upload_file():
             features, predictions = model(image)
 
         features = features.cpu().numpy()
+
+        # Without FAISS
         similarities = get_top_similar(features, conn, top_n=5, threshold=0.7)
         if not similarities:
             return jsonify({'error': 'No matches found'}), 201
@@ -55,9 +57,13 @@ def upload_file():
         for _, b, _ in similarities:
             res.append(b)
 
+        # Using FAISS
+        similarities_faiss = get_top_similar_faiss(features)
+        
         return jsonify({
             'predicted_class': str(animal_array[torch.argmax(predictions)]),
-            'similar_images': res
+            'similar_images': res,
+            'similar_images_faiss': similarities_faiss
         })
 
 

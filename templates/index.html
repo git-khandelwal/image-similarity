@@ -12,14 +12,14 @@
         <button type="submit">Upload</button>
     </form>
 
-    <!-- Image Preview -->
     <h2>Image Preview:</h2>
     <img id="imagePreview" src="" alt="Your image will appear here" style="max-width: 500px; display: none;">
 
-    <!-- Caption Output -->
-    <h2>Similar Image Results:</h2>
+    <h2>Similar Image Results without FAISS:</h2>
     <pre id="output"></pre>
 
+    <h2>Similar Image Results using FAISS:</h2>
+    <pre id="output_faiss"></pre>
     <script>
         document.getElementById('uploadForm').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -53,8 +53,16 @@
 
             const result = await response.json();
             if (response.ok) {
-                // Display predicted class and similar images
-                document.getElementById('output').textContent = `Predicted Class: ${result.predicted_class}\nSimilar Images: \n${result.similar_images.join('\n')}`;
+                // Check for 201 response
+                if (response.status === 201) {
+                    alert('No similar images found!');
+                }
+
+                else {  
+                    // Display predicted class and similar images
+                    document.getElementById('output').textContent = `Predicted Class: ${result.predicted_class}\nSimilar Images: \n${result.similar_images.join('\n')}`;
+                    document.getElementById('output_faiss').textContent = `Predicted Class: ${result.predicted_class}\nSimilar Images: \n${result.similar_images_faiss.join('\n')}`;
+                }
             } else {
                 document.getElementById('output').textContent = result.error;
             }

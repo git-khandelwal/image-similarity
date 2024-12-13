@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader, random_split, Subset
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+import faiss
 
 torch.manual_seed(42)
 np.random.seed(42)
@@ -34,6 +35,20 @@ def get_top_similar(feature, conn, top_n=5, threshold=0.6):
 
     similarities.sort(reverse=True, key=lambda x: x[0])
     return similarities[:top_n]
+
+def get_top_similar_faiss(feature, faiss_index="vector_index.faiss", top_n=5):
+    index = faiss.read_index(faiss_index)
+    _, indices = index.search(feature, top_n)
+    
+    conn = sqlite3.connect('features.db')
+    cursor = conn.cursor()
+    nearest_indices = [int(idx)+1 for idx in indices[0]]
+    placeholders = ','.join(['?'] * len(nearest_indices))
+    query = f"SELECT image_path, prediction FROM image_features WHERE id IN ({placeholders})"
+    cursor.execute(query, nearest_indices)
+    results = cursor.fetchall()
+    results = [list(result) for result in results]
+    return results
 
 def evaluate_model(model, test_loader, device, conn):
     model.eval()

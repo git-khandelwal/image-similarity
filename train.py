@@ -6,6 +6,7 @@ from model import EncoderCNN
 from dataset import ImageDataset, transform
 from torch.utils.data import DataLoader, random_split
 import numpy as np
+import faiss
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -38,8 +39,11 @@ model = EncoderCNN(embed_size=256, num_classes=90).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
+# FAISS
+vectors = []
+
 # Training
-num_epochs = 10
+num_epochs = 2
 for epoch in range(num_epochs):
     model.train()
     for idx, (images, image_paths, labels) in enumerate(data_loader):
@@ -54,13 +58,23 @@ for epoch in range(num_epochs):
         if epoch==num_epochs-1:
             with torch.no_grad():
                 for i in range(images.size(0)):
-                    feature_bytes = features[i].cpu().numpy().tobytes()
+                    feature = features[i].cpu().numpy()
+                    feature_bytes = feature.tobytes()
                     prediction_index = torch.argmax(predictions[i]).item()
                     c.execute('INSERT INTO image_features (feature, image_path, prediction) VALUES (?, ?, ?)', (feature_bytes, image_paths[i], prediction_index))
+                    
+                    # Adding feature vectors to vectors list
+                    vectors.append(feature)
 
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
 torch.save(model.state_dict(), 'trained_model.pth')
+
+vectors = np.array(vectors, dtype='float32')
+index = faiss.IndexFlatL2(256)
+index.add(vectors)
+print(f"Number of vectors in the index: {index.ntotal}")
+faiss.write_index(index, 'vector_index.faiss')
 
 conn.commit()
 conn.close()
