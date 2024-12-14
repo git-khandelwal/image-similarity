@@ -110,6 +110,8 @@ A simple frontend is included to facilitate interaction:
   Consider using vector databases like Faiss for faster, more scalable 
   similarity searches.
   
+## References
+- K. He, X. Zhang, S. Ren, and J. Sun, "Deep Residual Learning for Image Recognition," in *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 2016. [Paper Link](https://arxiv.org/abs/1512.03385)
 
  ## License
  This project is licensed under the MIT License.
