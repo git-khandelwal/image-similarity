@@ -43,7 +43,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 vectors = []
 
 # Training
-num_epochs = 2
+num_epochs = 10
 for epoch in range(num_epochs):
     model.train()
     for idx, (images, image_paths, labels) in enumerate(data_loader):

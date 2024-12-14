@@ -161,10 +161,10 @@ cython_debug/
 /animals
 
 # Pretrained Model
-*.pth
+# *.pth
 
 # SQL DB
-*.db
+# *.db
 
 # Testing with ipynb
 *.ipynb
@@ -173,7 +173,7 @@ cython_debug/
 /uploads
 
 # FAISS Vector Index
-*.faiss
+# *.faiss
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
