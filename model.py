@@ -7,7 +7,7 @@ class AutoEncoder(nn.Module):
     def __init__(self, embed_size, num_classes):
         super(AutoEncoder, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(9408, 1024), # 224*224*3
+            nn.Linear(9408, 1024), # 56*56*3 input image
             nn.ReLU(),
             nn.Linear(1024, embed_size)
         )
